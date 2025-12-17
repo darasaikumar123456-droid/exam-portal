@@ -6,28 +6,34 @@
     <title>Exam Portal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f1f5f9; --text: #0f172a; --accent: #1e293b; --success: #22c55e; --error: #ef4444; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #0f172a; --accent: #1e293b; --success: #22c55e; --error: #ef4444; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        #timer { position: sticky; top: 0; background: var(--accent); color: #fff; padding: 10px; border-radius: 0 0 8px 8px; text-align: center; font-weight: bold; z-index: 1000; margin: -15px -15px 15px -15px; display: none; }
-        .setup-container { max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .guideline-container { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; max-height: 180px; overflow-y: auto; background: #f8fafc; margin-bottom: 10px; }
-        .btn-action { background: #e2e8f0; border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
-        #main-quiz-area { display: none; }
-        .quiz-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 15px; }
-        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
-        .option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #f1f5f9; border-radius: 10px; text-align: left; cursor: pointer; background: #f8fafc; font-size: 15px; }
-        .correct { background: #dcfce7 !important; border-color: var(--success) !important; font-weight: bold; }
-        .wrong { background: #fee2e2 !important; border-color: var(--error) !important; }
-        .history-section { background: white; padding: 15px; border-radius: 12px; margin-top: 30px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
-        .review-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; overflow-y:auto; padding:20px; box-sizing:border-box; }
-        .review-content { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; }
+        
+        /* Layout Fixes */
+        .setup-container { max-width: 600px; margin: 10px auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 0.9rem; text-transform: uppercase; }
+        
+        /* Search and Guideline Box */
+        .guideline-controls { display: flex; gap: 10px; margin-bottom: 10px; }
+        #searchGuideline { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+        .guideline-container { border: 1px solid #e2e8f0; border-radius: 10px; padding: 5px; max-height: 250px; overflow-y: auto; background: #fff; }
+        .gl-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .gl-item:last-child { border-bottom: none; }
+        .gl-item input { width: 18px; height: 18px; margin-right: 12px; }
+
+        /* Quiz UI */
+        #timer { position: sticky; top: 0; background: var(--accent); color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 0 0 12px 12px; z-index: 1000; margin: -15px -15px 20px -15px; display: none; }
+        .quiz-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); }
+        .option { width: 100%; padding: 16px; margin: 12px 0; border: 2px solid #f1f5f9; border-radius: 12px; text-align: left; background: #fff; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .correct { background: #dcfce7 !important; border-color: var(--success) !important; color: #14532d; font-weight: 600; }
+        .wrong { background: #fee2e2 !important; border-color: var(--error) !important; color: #7f1d1d; }
+
+        /* Review and Log */
+        .history-section { margin-top: 30px; }
+        .history-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-small { padding: 8px 12px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -35,40 +41,230 @@
 <div id="timer">Time Remaining: 60:00</div>
 
 <div id="setup-screen" class="setup-container">
-    <h2 style="margin-top:0">Portal Setup</h2>
+    <h2 style="margin-top:0">Exam Portal</h2>
+    
     <div class="form-group">
-        <label>Subject Name:</label>
-        <input type="text" id="subjectName" placeholder="e.g. Managerial Communications">
+        <label>1. Subject Name</label>
+        <input type="text" id="subjectName" placeholder="Enter Subject (e.g. Communications)">
     </div>
+
     <div class="form-group">
-        <label>Upload Excel Bank:</label>
+        <label>2. Upload Question Bank</label>
         <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
+
     <div id="filter-options" style="display:none;">
-        <label>Select Guideline(s):</label>
-        <div style="margin-bottom: 8px;">
-            <button type="button" class="btn-action" onclick="toggleAll(true)">Select All</button>
-            <button type="button" class="btn-action" onclick="toggleAll(false)">Deselect All</button>
-        </div>
-        <div id="guideline-list" class="guideline-container"></div>
         <div class="form-group">
-            <label>Number of Questions:</label>
+            <label>3. Select Guidelines</label>
+            <div class="guideline-controls">
+                <input type="text" id="searchGuideline" placeholder="Search guidelines..." onkeyup="filterGuidelines()">
+                <button type="button" class="btn-small" onclick="toggleAll(true)">All</button>
+                <button type="button" class="btn-small" onclick="toggleAll(false)">None</button>
+            </div>
+            <div id="guideline-list" class="guideline-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label>4. Question Count</label>
             <input type="number" id="questionCount" value="50">
         </div>
+
         <button class="btn-primary" onclick="initializeQuiz()">Start Practice Session</button>
     </div>
 </div>
 
-<div id="main-quiz-area">
-    <div style="text-align:center;"><h2 id="displaySubject" style="margin-bottom:5px;"></h2></div>
+<div id="main-quiz-area" style="display:none;">
     <div class="quiz-card">
-        <div class="progress-bar"><div id="progress-fill"></div></div>
-        <div id="quiz-box">
-            <div id="question-text" style="font-weight:600; margin-bottom:15px;"></div>
-            <div id="options-container"></div>
-            <button id="next-btn" onclick="nextQuestion()" style="display:none; width:100%; padding:15px; margin-top:15px; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:bold;">Next Question →</button>
+        <div id="progress-text" style="font-size:0.8rem; color:#64748b; margin-bottom:5px;"></div>
+        <div class="progress-bar" style="height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden; margin-bottom:20px;">
+            <div id="progress-fill" style="height:100%; background:var(--primary); width:0%; transition:0.3s;"></div>
         </div>
-        <div id="result-box" style="display:none; text-align:center;">
-            <h3>Session Complete!</h3>
-            <p id="score-text" style="font-size:1.4rem; font-weight:bold;"></p>
-            <button onclick
+        <div id="question-text" style="font-size:1.1rem; font-weight:600; margin-bottom:20px;"></div>
+        <div id="options-container"></div>
+        <button id="next-btn" onclick="nextQuestion()" style="display:none; width:100%; padding:16px; margin-top:20px; background:var(--accent); color:white; border:none; border-radius:12px; font-weight:bold;">Continue →</button>
+    </div>
+    
+    <div id="explanation-box" style="display:none; margin-top:15px; padding:15px; background:#eff6ff; border-left:4px solid var(--primary); border-radius:8px; font-size:14px;">
+        <strong>Explanation:</strong> <span id="explanation-text"></span>
+    </div>
+</div>
+
+<div id="result-screen" style="display:none; text-align:center;" class="setup-container">
+    <h3>Session Complete</h3>
+    <h1 id="score-text" style="margin:10px 0;"></h1>
+    <button class="btn-primary" onclick="location.reload()">New Session</button>
+</div>
+
+<div class="history-section" id="history-area">
+    <label>Attempt History</label>
+    <div id="history-list"></div>
+    <button onclick="clearHistory()" style="color:red; background:none; border:none; font-size:12px; margin-top:10px; cursor:pointer;">Clear All Data</button>
+</div>
+
+<div id="review-overlay" class="review-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; overflow-y:auto; padding:15px;">
+    <div style="background:white; padding:20px; border-radius:12px; max-width:600px; margin:0 auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="review-title" style="margin:0">Review</h3>
+            <button onclick="document.getElementById('review-overlay').style.display='none'">Close</button>
+        </div>
+        <div id="review-content"></div>
+    </div>
+</div>
+
+<script>
+    let masterBank = [], currentQuiz = [], userAnswers = [], currentIdx = 0, score = 0, timeLeft = 3600, timerInterval, refCol = "";
+
+    window.onload = loadHistory;
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            masterBank = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            const keys = Object.keys(masterBank[0]);
+            refCol = keys.find(k => k.toLowerCase().includes('ref') || k.toLowerCase().includes('guide')) || keys[0];
+            renderGuidelines();
+            document.getElementById('filter-options').style.display = 'block';
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+    function renderGuidelines() {
+        const guides = [...new Set(masterBank.map(i => String(i[refCol] || "General")))].sort();
+        document.getElementById('guideline-list').innerHTML = guides.map(g => `
+            <div class="gl-item">
+                <input type="checkbox" name="gl" value="${g}" checked>
+                <span>${g}</span>
+            </div>`).join('');
+    }
+
+    function filterGuidelines() {
+        const val = document.getElementById('searchGuideline').value.toLowerCase();
+        document.querySelectorAll('.gl-item').forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(val) ? 'flex' : 'none';
+        });
+    }
+
+    function toggleAll(state) {
+        document.querySelectorAll('input[name="gl"]').forEach(cb => cb.checked = state);
+    }
+
+    function initializeQuiz() {
+        const selected = Array.from(document.querySelectorAll('input[name="gl"]:checked')).map(c => c.value);
+        const limit = parseInt(document.getElementById('questionCount').value) || 50;
+        const filtered = masterBank.filter(i => selected.includes(String(i[refCol] || "General")));
+        if(filtered.length === 0) return alert("Please select a guideline!");
+
+        currentQuiz = filtered.sort(() => Math.random() - 0.5).slice(0, limit);
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('main-quiz-area').style.display = 'block';
+        document.getElementById('timer').style.display = 'block';
+        
+        loadQuestion();
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            const m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer').innerText = `Time: ${m}:${s<10?'0':''}${s}`;
+            if(timeLeft <= 0) finishQuiz();
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        const q = currentQuiz[currentIdx];
+        const correctVal = (q['Correct Answer']||"").toString().trim().toUpperCase();
+        const map = {'A': q['Option A'], 'B': q['Option B'], 'C': q['Option C'], 'D': q['Option D']};
+        const correctText = map[correctVal] || correctVal;
+
+        document.getElementById('progress-text').innerText = `Question ${currentIdx+1} of ${currentQuiz.length}`;
+        document.getElementById('progress-fill').style.width = `${(currentIdx/currentQuiz.length)*100}%`;
+        document.getElementById('question-text').innerText = q.Question;
+        document.getElementById('explanation-box').style.display = 'none';
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        document.getElementById('next-btn').style.display = 'none';
+
+        ['Option A', 'Option B', 'Option C', 'Option D'].forEach(key => {
+            if(!q[key]) return;
+            const btn = document.createElement("button");
+            btn.className = "option";
+            btn.innerText = q[key];
+            btn.onclick = () => {
+                document.querySelectorAll(".option").forEach(b => b.disabled = true);
+                const isCorrect = btn.innerText.trim() === correctText.trim();
+                userAnswers.push({q: q.Question, user: btn.innerText, correct: correctText, isCorrect, exp: q.Explanation});
+                
+                if(isCorrect) { score++; btn.classList.add("correct"); }
+                else { 
+                    btn.classList.add("wrong"); 
+                    document.querySelectorAll(".option").forEach(b => {
+                        if(b.innerText.trim() === correctText.trim()) b.classList.add("correct");
+                    });
+                }
+                document.getElementById('explanation-text').innerText = q.Explanation || "Refer to study guide.";
+                document.getElementById('explanation-box').style.display = 'block';
+                document.getElementById('next-btn').style.display = 'block';
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if(currentIdx < currentQuiz.length) loadQuestion(); else finishQuiz();
+    }
+
+    function finishQuiz() {
+        clearInterval(timerInterval);
+        const attempt = {
+            id: Date.now(),
+            subject: document.getElementById('subjectName').value || "General",
+            score: `${score}/${currentQuiz.length}`,
+            date: new Date().toLocaleDateString(),
+            details: userAnswers
+        };
+        const history = JSON.parse(localStorage.getItem('examHistory') || "[]");
+        history.unshift(attempt);
+        localStorage.setItem('examHistory', JSON.stringify(history));
+        
+        document.getElementById('main-quiz-area').style.display = 'none';
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('score-text').innerText = attempt.score;
+        loadHistory();
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('examHistory') || "[]");
+        document.getElementById('history-list').innerHTML = history.map(a => `
+            <div class="history-card">
+                <div>
+                    <strong>${a.subject}</strong><br>
+                    <small>${a.date} - Score: ${a.score}</small>
+                </div>
+                <button class="btn-small" onclick="viewReview(${a.id})">Review</button>
+            </div>`).join('');
+    }
+
+    function viewReview(id) {
+        const a = JSON.parse(localStorage.getItem('examHistory')).find(i => i.id === id);
+        document.getElementById('review-title').innerText = `${a.subject} Review`;
+        document.getElementById('review-content').innerHTML = a.details.map((d, i) => `
+            <div style="padding:10px; margin-bottom:10px; border-radius:8px; background:${d.isCorrect?'#f0fdf4':'#fef2f2'}; border:1px solid #ddd;">
+                <div style="font-weight:bold; margin-bottom:5px;">${i+1}. ${d.q}</div>
+                <div style="font-size:13px;">Your: <span style="color:${d.isCorrect?'green':'red'}">${d.user}</span></div>
+                <div style="font-size:13px;">Correct: <strong>${d.correct}</strong></div>
+                <div style="font-size:12px; margin-top:5px; color:#475569;"><em>${d.exp || ""}</em></div>
+            </div>`).join('');
+        document.getElementById('review-overlay').style.display = 'block';
+    }
+
+    function clearHistory() { if(confirm("Clear history?")) { localStorage.clear(); loadHistory(); } }
+</script>
+</body>
+</html>
